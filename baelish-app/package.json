@@ -4,7 +4,7 @@
   "description": "Dorm kitchen management web application.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node_modules/.bin/supervisor -w build build/app/server.js"
+    "start": "node_modules/.bin/supervisor -w build/public/app.js index.js"
   },
   "author": "Peter Bay Bastian",
   "license": "MIT",
@@ -18,13 +18,18 @@
     "supervisor": "~0.5.6",
     "grunt-text-replace": "~0.3.10",
     "minifyify": "~1.1.2",
-    "source-map-support": "~0.2.5"
+    "source-map-support": "~0.2.5",
+    "coffee-script-redux": "~2.0.0-beta8"
   },
   "devDependencies": {
     "browserify": "~3.24.5",
     "coffee-script": "~1.7.1",
     "mkpath": "~0.1.0",
     "glob": "~3.2.8",
-    "gaze": "~0.4.3"
+    "gaze": "~0.4.3",
+    "mapcat": "~0.2.0",
+    "commonjs-everywhere": "~0.9.5",
+    "escodegen": "~1.1.0",
+    "nodemon": "~1.0.14"
   }
 }
