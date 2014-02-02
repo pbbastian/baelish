@@ -1,0 +1,30 @@
+{
+  "name": "baelish-app",
+  "version": "0.0.0",
+  "description": "Dorm kitchen management web application.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node_modules/.bin/supervisor -w build build/app/server.js"
+  },
+  "author": "Peter Bay Bastian",
+  "license": "MIT",
+  "dependencies": {
+    "fruitmachine": "~0.5.3",
+    "express": "~3.4.8",
+    "express-expose": "~0.3.3",
+    "hjs": "0.0.6",
+    "hogan.js": "~2.0.0",
+    "lodash": "~2.4.1",
+    "supervisor": "~0.5.6",
+    "grunt-text-replace": "~0.3.10",
+    "minifyify": "~1.1.2",
+    "source-map-support": "~0.2.5"
+  },
+  "devDependencies": {
+    "browserify": "~3.24.5",
+    "coffee-script": "~1.7.1",
+    "mkpath": "~0.1.0",
+    "glob": "~3.2.8",
+    "gaze": "~0.4.3"
+  }
+}

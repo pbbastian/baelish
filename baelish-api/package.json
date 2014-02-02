@@ -1,0 +1,15 @@
+{
+  "name": "baelish-api",
+  "version": "0.0.0",
+  "description": "Web API for the baelish web application.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node_modules/.bin/supervisor app.js"
+  },
+  "author": "Peter Bay Bastian",
+  "license": "MIT",
+  "devDependencies": {
+    "supervisor": "~0.5.6"
+  }
+}

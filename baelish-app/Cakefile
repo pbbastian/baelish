@@ -1,0 +1,90 @@
+fs = require "fs"
+path = require "path"
+_ = require "lodash"
+coffee = require "coffee-script"
+mkpath = require "mkpath"
+glob = require "glob"
+Hogan = require "hogan.js"
+gaze = require "gaze"
+
+# ANSI Terminal Colors
+bold = "\x1b[0;1m"
+green = "\x1b[0;32m"
+reset = "\x1b[0m"
+red = "\x1b[0;31m"
+
+logError = (err) -> console.log "#{red}!#{reset} #{bold}#{err}#{reset}"
+
+logFileCreation = (filename) -> console.log "#{green}>#{reset} Created file: #{bold}%s#{reset}", filename
+
+log = (message, color, explanation) -> console.log color + message + reset + ' ' + (explanation or '')
+
+compileCoffee = (filename, output) ->
+  fs.readFile filename, { encoding: "utf8" }, (err, data) ->
+    return logError err if err
+    outputDir = path.join output, (path.dirname filename)
+    outputJsFilename = path.join output, (filename.replace(/\.coffee$/, ".js"))
+    outputMapFilename = path.join output, (filename.replace(/\.coffee$/, ".map"))
+    mkpath.sync outputDir
+    compiled = coffee.compile data,
+      sourceMap: true
+      sourceRoot: path.relative (path.dirname filename), __dirname
+      sourceFiles: [filename]
+      generatedFile: path.basename outputJsFilename
+    compiledJS = "//# sourceMappingURL=#{path.relative outputDir, outputMapFilename}\nrequire('source-map-support').install();\n#{compiled.js}"
+    fs.writeFile outputJsFilename, compiledJS, { encoding: "utf8" }, (err) ->
+      return logError err if err
+      logFileCreation outputJsFilename
+    fs.writeFile outputMapFilename, compiled.v3SourceMap, { encoding: "utf8" }, (err) ->
+      return logError err if err
+      logFileCreation outputMapFilename
+
+compileHogan = (filename, output) ->
+  fs.readFile filename, { encoding: "utf8" }, (err, data) ->
+    return logError err if err
+    outputDir = path.join output, (path.dirname filename)
+    outputFilename = path.join output, (filename.replace(/\.hjs$/, ".js"))
+    mkpath.sync outputDir
+    compiled = Hogan.compile filename,
+      asString: true
+    compiled = "var Hogan = require('hogan.js');\nmodule.exports = new Hogan.Template(#{compiled});"
+    fs.writeFile outputFilename, compiled, { encoding: "utf8" }, (err) ->
+      return logError err if err
+      logFileCreation outputFilename
+
+forEachGlob = (patterns, fn) ->
+  patterns = [patterns] if typeof patterns == "string"
+  _.forEach patterns, (pattern) ->
+    glob pattern, (err, filenames) ->
+      return logError err if err
+      _.forEach filenames, fn
+
+task "compile:coffeescript", "compile coffeescript files", (options) ->
+  forEachGlob "app/**/*.coffee", (filename) ->
+    compileCoffee filename, "build"
+
+task "compile:hogan", "compile Hogan templates", (options) ->
+  forEachGlob "app/templates/**/*.hjs", (filename) ->
+    compileHogan filename, "build"
+
+task "copy:hogan", "copy Hogan templates", (options) ->
+  forEachGlob "app/templates/**/*.hjs", (filename) ->
+    fs.createReadStream(filename).pipe(fs.createWriteStream(path.join "build", filename));
+
+task "watch", "compile files on change", (options) ->
+  invoke "compile:coffeescript"
+  invoke "compile:hogan"
+  invoke "copy:hogan"
+  gaze "app/**/*.coffee", (err, watcher) ->
+    handler = (filename) ->
+      relativeFilename = path.relative __dirname, filename
+      compileCoffee relativeFilename, "build"
+    this.on "changed", handler
+    this.on "added", handler
+  gaze "app/**/*.hjs", (err, watcher) ->
+    handler = (filename) ->
+      relativeFilename = path.relative __dirname, filename
+      compileHogan relativeFilename, "build"
+      fs.createReadStream(relativeFilename).pipe(fs.createWriteStream(path.join "build", relativeFilename))
+    this.on "changed", handler
+    this.on "added", handler

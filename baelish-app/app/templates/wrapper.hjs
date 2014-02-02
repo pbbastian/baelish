@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <!--<link rel="stylesheet" type="text/css" href="build.css"/>-->
+  </head>
+  <body class='app'>
+    <div class="app_content js-app_content">{{{body}}}</div>
+  <script>{{{javascript}}}</script>
+  <script src="/app.js"></script>
+  </body>
+</html>
