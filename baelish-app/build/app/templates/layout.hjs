@@ -1,8 +1,0 @@
-<h1>Herro!</h1>
-<nav>
-  <a href='/'>Home</a>
-  <a href='/about/Peter'>About</a>
-</nav>
-<div>
-  {{{content}}}
-</div>
